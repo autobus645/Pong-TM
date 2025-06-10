@@ -7,17 +7,23 @@ WHITE = (255,255,255)
 BLACK = (0, 0, 0)
 
 #ecran
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1280, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Pong")
 
+#options jeu
+vitesse_balle = 3
+rayon_balle = 6
+width_paddle = 10
+height_paddle = 100
+vitesse_paddle = 10
 #score
 score_gauche = 0
 score_droite = 0
 
 
 class Paddle:
-    VITESSE = 10
+    VITESSE = vitesse_paddle
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -51,12 +57,38 @@ class Paddle:
             if self.y < HEIGHT - self.height:
                 self.y += self.VITESSE
                 self.vitesse_y = self.VITESSE
+    def movementAI2(self):       #IA dur, niveau 2
+        centreypaddle = self.height/2
+        if self.y > 0:
+            if self.y + centreypaddle > balle.y:
+                self.y -= self.VITESSE
+        if self.y < HEIGHT - self.height:
+            if self.y + centreypaddle < balle.y:
+                self.y += self.VITESSE
+    def movementAI3(self):       #IA très dur, niveau 3 
+        centreypaddle = self.height/2
+        if self.y > 0:
+            if self.y + centreypaddle > balle.y:
+                self.y -= self.VITESSE * 2
+        if self.y < HEIGHT - self.height:
+            if self.y + centreypaddle < balle.y:
+                self.y += self.VITESSE * 2
+    def movementAI1(self):       #IA simple, niveau 1
+        centreypaddle = self.height/2
+        if self.y > 0:
+            if self.y + centreypaddle > balle.y:
+                self.y -= self.VITESSE/2
+        if self.y < HEIGHT - self.height:
+            if self.y + centreypaddle < balle.y:
+                self.y += self.VITESSE/2
+            
+
 
 
 
 class Ball:
-    vitesse_balle_x = 3
-    vitesse_balle_y = 3
+    vitesse_balle_x = vitesse_balle
+    vitesse_balle_y = vitesse_balle
     def __init__(self, x, y, rayon):
         self.x = x
         self.y = y
@@ -76,39 +108,39 @@ class Ball:
         if self.x >= WIDTH:
             self.x = WIDTH // 2
             self.y = HEIGHT // 2
-            self.vitesse_balle_x = 3
-            self.vitesse_balle_y = 3
-            return "point_gauche"                                           #ajouter un point pour la droite
+            self.vitesse_balle_x = vitesse_balle
+            self.vitesse_balle_y = vitesse_balle
+            return "point_gauche"       #ajouter un point pour la gauche
         if self.x <= 0:
             self.x = WIDTH // 2
             self.y = HEIGHT // 2
-            self.vitesse_balle_x = -3
-            self.vitesse_balle_y = 3
-            return "point_droite"                                           #ajouter un point pour la gauche
+            self.vitesse_balle_x = -vitesse_balle
+            self.vitesse_balle_y = vitesse_balle
+            return "point_droite"       #ajouter un point pour la droite
             
 
     def check_collision(self, paddle):
         if (
-            self.x - self.rayon <= paddle.x + paddle.width and              #cote gauche de la balle avec cote droit du paddle
-            self.x + self.rayon >= paddle.x and                             #cote droit de la balle avec cote gauche du paddle
+            self.x - self.rayon <= paddle.x + paddle.width and      #cote gauche de la balle avec cote droit du paddle
+            self.x + self.rayon >= paddle.x and         #cote droit de la balle avec cote gauche du paddle
             self.y >= paddle.y and                             
             self.y <= paddle.y + paddle.height
         ):
             self.vitesse_balle_x *= -1
-            self.vitesse_balle_y += paddle.vitesse_y // 2
+            self.vitesse_balle_y += paddle.vitesse_y // 8
            
    
 
-paddle_gauche = Paddle(10, HEIGHT/2-50, 10, 100)
-paddle_droite = Paddle(WIDTH-20, HEIGHT/2-50, 10, 100)
-balle = Ball(400,300,6)
+paddle_gauche = Paddle(10, HEIGHT/2-50, width_paddle, height_paddle)
+paddle_droite = Paddle(WIDTH-20, HEIGHT/2-50, width_paddle, height_paddle)
+balle = Ball(WIDTH/2,HEIGHT/2,rayon_balle)
 
 font = pygame.font.SysFont("Arial", 50)
 
 #boucle pour faire tourner le jeu
 CLOCK = pygame.time.Clock()
 def main():
-    global score_gauche, score_droite                                           #pour utiliser ces variables en dehors de main
+    global score_gauche, score_droite       #pour utiliser ces variables en dehors de main
     run = True
     
     while run:
@@ -118,14 +150,15 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
         
-        pygame.draw.line(WIN, WHITE, (WIDTH/2, 0), (WIDTH/2, HEIGHT))           #ligne au milieu
-        Paddle.draw(paddle_gauche, WIN)                                         #dessiner les raquettes
-        Paddle.draw(paddle_droite, WIN)
-        Paddle.movementleft(paddle_gauche)                                      #movement des raquettes
-        Paddle.movementright(paddle_droite)
-        Ball.draw(balle, WIN)                                                   #dessiner la balle
-        Ball.movement(balle)                                                    #movement de la balle
-        point = balle.movement()                                                #score
+        pygame.draw.line(WIN, WHITE, (WIDTH/2, 0), (WIDTH/2, HEIGHT))       #ligne au milieu
+        paddle_gauche.draw(WIN)     #dessiner les raquettes
+        paddle_droite.draw(WIN)
+        paddle_gauche.movementleft()      #movement des raquettes
+        paddle_droite.movementright()
+        paddle_droite.movementAI1()      #raquette droite IA
+        balle.draw(WIN)       #dessiner la balle
+        balle.movement()        #movement de la balle
+        point = balle.movement()        #score
         if point == "point_gauche":
             score_gauche += 1
         if point == "point_droite":
