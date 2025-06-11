@@ -17,6 +17,7 @@ rayon_balle = 6
 width_paddle = 10
 height_paddle = 100
 vitesse_paddle = 10
+difficulté_IA = 0       #le nombre multiplie la vitesse du paddle, 0 = pas de IA, donc on peut jouer à 2 joueurs
 #score
 score_gauche = 0
 score_droite = 0
@@ -57,30 +58,15 @@ class Paddle:
             if self.y < HEIGHT - self.height:
                 self.y += self.VITESSE
                 self.vitesse_y = self.VITESSE
-    def movementAI2(self):       #IA dur, niveau 2
+    def movementAI(self):       #IA
         centreypaddle = self.height/2
         if self.y > 0:
             if self.y + centreypaddle > balle.y:
-                self.y -= self.VITESSE
+                self.y -= self.VITESSE * difficulté_IA
         if self.y < HEIGHT - self.height:
             if self.y + centreypaddle < balle.y:
-                self.y += self.VITESSE
-    def movementAI3(self):       #IA très dur, niveau 3 
-        centreypaddle = self.height/2
-        if self.y > 0:
-            if self.y + centreypaddle > balle.y:
-                self.y -= self.VITESSE * 2
-        if self.y < HEIGHT - self.height:
-            if self.y + centreypaddle < balle.y:
-                self.y += self.VITESSE * 2
-    def movementAI1(self):       #IA simple, niveau 1
-        centreypaddle = self.height/2
-        if self.y > 0:
-            if self.y + centreypaddle > balle.y:
-                self.y -= self.VITESSE/2
-        if self.y < HEIGHT - self.height:
-            if self.y + centreypaddle < balle.y:
-                self.y += self.VITESSE/2
+                self.y += self.VITESSE * difficulté_IA
+
             
 
 
@@ -155,7 +141,7 @@ def main():
         paddle_droite.draw(WIN)
         paddle_gauche.movementleft()      #movement des raquettes
         paddle_droite.movementright()
-        paddle_droite.movementAI1()      #raquette droite IA
+        paddle_droite.movementAI()      #raquette droite IA
         balle.draw(WIN)       #dessiner la balle
         balle.movement()        #movement de la balle
         point = balle.movement()        #score
