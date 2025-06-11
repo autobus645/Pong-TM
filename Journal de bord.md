@@ -15,8 +15,11 @@ choix du pygame : c'est bien pour les débutants contrairement aux autres module
 01.02.2025 : création du git
 
 25.02.2025 : création d'une petite fenetre qui tourne avec pygame
-
+critique : pas assez de contenu à montrer au premier rdv de TM, le TM commence lentement
 02.04.2025 : ajout des raquettes (+ mouvement) et de la balle
 
 29.04.2025 : fini le pong (la balle rebondit sur les raquettes, deux joueurs peuvent jouer et score) + essai de physique du pong mais ça ne marche pas très bien, peut être changer l'idée de la physique 
 https://gamedev.stackexchange.com/questions/147773/what-is-original-pong-ball-behaviour --> physique du pong original
+
+10.06.2025 : ajout d'IA avec plusieurs niveaux, amélioration du code (moins de redondance) et ajout de changer quelques options du jeu
+critique : un peu trop desorganisé, je n'ai pas beaucoup pensé au TM pendant ce temps, je n'arrive pas a tenir les commits tous les 1-2 semaines
