@@ -18,6 +18,12 @@ width_paddle = 10
 height_paddle = 100
 vitesse_paddle = 10
 difficulté_IA = 0       #le nombre multiplie la vitesse du paddle, 0 = pas de IA, donc on peut jouer à 2 joueurs
+key_up_gauche = pygame.K_w
+key_down_gauche = pygame.K_s
+key_up_droite = pygame.K_UP
+key_down_droite = pygame.K_DOWN
+
+
 #score
 score_gauche = 0
 score_droite = 0
@@ -25,39 +31,31 @@ score_droite = 0
 
 class Paddle:
     VITESSE = vitesse_paddle
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, key_up, key_down):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.vitesse_y = 0
+        self.key_up = key_up
+        self.key_down = key_down
 
     def draw(self, win):
         pygame.draw.rect(WIN, WHITE, (self.x, self.y, self.width, self.height))
     
-    def movementleft(self):
+    def movement(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_w]:
+        if keys[self.key_up]:
             if self.y > 0:
                 self.y -= self.VITESSE
                 self.vitesse_y = -self.VITESSE
-        if keys[pygame.K_s]:
+        if keys[self.key_down]:
             if self.y < HEIGHT - self.height:
                 self.y += self.VITESSE
                 self.vitesse_y = self.VITESSE
-        if keys[pygame.K_s] and keys[pygame.K_w] ==  False:
+        if keys[self.key_down] and keys[self.key_up] == False:
             self.vitesse_y = 0
 
-    def movementright(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_UP] :
-            if self.y > 0:
-                self.y -= self.VITESSE
-                self.vitesse_y = -self.VITESSE
-        if keys[pygame.K_DOWN]:
-            if self.y < HEIGHT - self.height:
-                self.y += self.VITESSE
-                self.vitesse_y = self.VITESSE
     def movementAI(self):       #IA
         centreypaddle = self.height/2
         if self.y > 0:
@@ -68,9 +66,6 @@ class Paddle:
                 self.y += self.VITESSE * difficulté_IA
 
             
-
-
-
 
 class Ball:
     vitesse_balle_x = vitesse_balle
@@ -117,8 +112,8 @@ class Ball:
            
    
 
-paddle_gauche = Paddle(10, HEIGHT/2-50, width_paddle, height_paddle)
-paddle_droite = Paddle(WIDTH-20, HEIGHT/2-50, width_paddle, height_paddle)
+paddle_gauche = Paddle(10, HEIGHT/2-50, width_paddle, height_paddle, key_up_gauche, key_down_gauche)
+paddle_droite = Paddle(WIDTH-20, HEIGHT/2-50, width_paddle, height_paddle, key_up_droite, key_down_droite )
 balle = Ball(WIDTH/2,HEIGHT/2,rayon_balle)
 
 font = pygame.font.SysFont("Arial", 50)
@@ -139,8 +134,8 @@ def main():
         pygame.draw.line(WIN, WHITE, (WIDTH/2, 0), (WIDTH/2, HEIGHT))       #ligne au milieu
         paddle_gauche.draw(WIN)     #dessiner les raquettes
         paddle_droite.draw(WIN)
-        paddle_gauche.movementleft()      #movement des raquettes
-        paddle_droite.movementright()
+        paddle_gauche.movement()      #movement des raquettes
+        paddle_droite.movement()
         paddle_droite.movementAI()      #raquette droite IA
         balle.draw(WIN)       #dessiner la balle
         balle.movement()        #movement de la balle
