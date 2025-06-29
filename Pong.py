@@ -1,4 +1,5 @@
 import pygame 
+import random
 
 pygame.init()
 pygame.font.init()
@@ -17,12 +18,14 @@ rayon_balle = 6
 width_paddle = 10
 height_paddle = 100
 vitesse_paddle = 10
-difficulté_IA = 0       #le nombre multiplie la vitesse du paddle, 0 = pas de IA, donc on peut jouer à 2 joueurs
+difficulté_IA = 1       #le nombre multiplie la vitesse du paddle, 0 = pas de IA, donc on peut jouer à 2 joueurs
 key_up_gauche = pygame.K_w
 key_down_gauche = pygame.K_s
 key_up_droite = pygame.K_UP
 key_down_droite = pygame.K_DOWN
 
+font = pygame.font.SysFont("Arial", 50)
+start_img = pygame.image.load("blue_button.png")
 
 #score
 score_gauche = 0
@@ -57,15 +60,20 @@ class Paddle:
             self.vitesse_y = 0
 
     def movementAI(self):       #IA
-        centreypaddle = self.height/2
-        if self.y > 0:
-            if self.y + centreypaddle > balle.y:
-                self.y -= self.VITESSE * difficulté_IA
-        if self.y < HEIGHT - self.height:
-            if self.y + centreypaddle < balle.y:
-                self.y += self.VITESSE * difficulté_IA
+        if balle.vitesse_balle_x > 0:
+            erreur = random.randint(-int(30 * (2 - difficulté_IA)), int(30 * (2 - difficulté_IA)))
+            centreypaddle = self.height/2
+            if self.y > 0:
+                if self.y + centreypaddle > balle.y + erreur:
+                    self.y -= self.VITESSE * difficulté_IA
+            if self.y < HEIGHT - self.height:
+                if self.y + centreypaddle < balle.y + erreur:
+                    self.y += self.VITESSE * difficulté_IA
+            if self.y < 0:
+                self.y = 0
+            elif self.y > HEIGHT - self.height:
+                self.y = HEIGHT - self.height
 
-            
 
 class Ball:
     vitesse_balle_x = vitesse_balle
@@ -109,14 +117,62 @@ class Ball:
         ):
             self.vitesse_balle_x *= -1
             self.vitesse_balle_y += paddle.vitesse_y // 8
-           
-   
+        
+        if ( 
+            self.x + self.rayon > paddle.x and
+            self.x - self.rayon < paddle.x + paddle.width   #collision avec le haut ou le bas du paddle
+        ):
+        
+            if (
+                self.y + self.rayon >= paddle.y and
+                self.y - self.rayon < paddle.y              #si la balle touche le haut du paddle
+            ):
+                self.vitesse_balle_y *= -1
+                
+
+            elif (
+                self.y - self.rayon <= paddle.y + paddle.height and 
+                self.y + self.rayon > paddle.y + paddle.height  #si la balle touche le bas du paddle
+            ):
+                self.vitesse_balle_y *= -1
+                
 
 paddle_gauche = Paddle(10, HEIGHT/2-50, width_paddle, height_paddle, key_up_gauche, key_down_gauche)
 paddle_droite = Paddle(WIDTH-20, HEIGHT/2-50, width_paddle, height_paddle, key_up_droite, key_down_droite )
 balle = Ball(WIDTH/2,HEIGHT/2,rayon_balle)
 
-font = pygame.font.SysFont("Arial", 50)
+
+def menu():
+    global difficulté_IA
+    run = True
+    while run:
+        WIN.fill(BLACK)
+        
+        titre = font.render("Choisissez la difficulté de l'IA :", True, WHITE)
+        facile = font.render("1 - Facile", True, WHITE)
+        moyen = font.render("2 - Moyen", True, WHITE)
+        difficile = font.render("3 - Difficile", True, WHITE)
+        
+        WIN.blit(titre, (WIDTH / 2 - titre.get_width() / 2, 200))
+        WIN.blit(facile, (WIDTH / 2 - facile.get_width() / 2, 300))
+        WIN.blit(moyen, (WIDTH / 2 - moyen.get_width() / 2, 370))
+        WIN.blit(difficile, (WIDTH / 2 - difficile.get_width() / 2, 440))
+
+        pygame.display.update()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    difficulté_IA = 0.6
+                    run = False
+                elif event.key == pygame.K_2:
+                    difficulté_IA = 1.0
+                    run = False
+                elif event.key == pygame.K_3:
+                    difficulté_IA = 1.4
+                    run = False
 
 #boucle pour faire tourner le jeu
 CLOCK = pygame.time.Clock()
@@ -151,5 +207,5 @@ def main():
         pygame.display.update()
         
     pygame.quit()
-
+menu()
 main()
