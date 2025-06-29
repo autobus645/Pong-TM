@@ -25,7 +25,7 @@ key_up_droite = pygame.K_UP
 key_down_droite = pygame.K_DOWN
 
 font = pygame.font.SysFont("Arial", 50)
-start_img = pygame.image.load("blue_button.png")
+
 
 #score
 score_gauche = 0

@@ -30,3 +30,5 @@ critique : un peu trop desorganisé, je n'ai pas beaucoup pensé au TM pendant c
 
 13.06.2025 
 - moins de redondance dans la fonction movement du Paddle (une fonction pour les deux paddles avec des touches modifiables au lieu de deux fontions pour deux paddles avec des touches fixes)
+29.06.2025
+- ajout du menu avec difficultés, IA plus humaine (marges d'erreur qui dépend de la difficulté de l'IA), essai de réparer le bug (la balle rebondit sur le haut et le bas du paddle), ça marche un peu mais un bug autre apparait quelques fois? 
