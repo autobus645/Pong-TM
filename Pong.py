@@ -1,5 +1,6 @@
 import pygame 
 import random
+import time
 
 pygame.init()
 pygame.font.init()
@@ -13,17 +14,18 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Pong")
 
 #options jeu
-vitesse_balle = 3
+vitesse_balle = 360
 rayon_balle = 6
 width_paddle = 10
 height_paddle = 100
-vitesse_paddle = 10
+vitesse_paddle = 600
 difficulté_IA = 1       #le nombre multiplie la vitesse du paddle, 0 = pas de IA, donc on peut jouer à 2 joueurs
 key_up_gauche = pygame.K_w
 key_down_gauche = pygame.K_s
 key_up_droite = pygame.K_UP
 key_down_droite = pygame.K_DOWN
-
+FPS = 60
+erreur = 0      #erreur pour le paddle de l'ia
 font = pygame.font.SysFont("Arial", 50)
 
 
@@ -46,29 +48,27 @@ class Paddle:
     def draw(self, win):
         pygame.draw.rect(WIN, WHITE, (self.x, self.y, self.width, self.height))
     
-    def movement(self):
+    def movement(self, dt):
         keys = pygame.key.get_pressed()
         if keys[self.key_up]:
             if self.y > 0:
-                self.y -= self.VITESSE
+                self.y -= self.VITESSE * dt
                 self.vitesse_y = -self.VITESSE
         if keys[self.key_down]:
             if self.y < HEIGHT - self.height:
-                self.y += self.VITESSE
+                self.y += self.VITESSE * dt
                 self.vitesse_y = self.VITESSE
-        if keys[self.key_down] and keys[self.key_up] == False:
-            self.vitesse_y = 0
+        
 
-    def movementAI(self):       #IA
+    def movementAI(self, dt):       #IA
         if balle.vitesse_balle_x > 0:
-            erreur = random.randint(-int(30 * (2 - difficulté_IA)), int(30 * (2 - difficulté_IA)))
             centreypaddle = self.height/2
             if self.y > 0:
                 if self.y + centreypaddle > balle.y + erreur:
-                    self.y -= self.VITESSE * difficulté_IA
+                    self.y -= self.VITESSE * difficulté_IA * dt
             if self.y < HEIGHT - self.height:
                 if self.y + centreypaddle < balle.y + erreur:
-                    self.y += self.VITESSE * difficulté_IA
+                    self.y += self.VITESSE * difficulté_IA * dt
             if self.y < 0:
                 self.y = 0
             elif self.y > HEIGHT - self.height:
@@ -87,9 +87,9 @@ class Ball:
     def draw(self, win):
         pygame.draw.circle(WIN, WHITE,(self.x, self.y), self.rayon)
 
-    def movement(self):
-        self.x += self.vitesse_balle_x
-        self.y += self.vitesse_balle_y
+    def movement(self, dt):
+        self.x += self.vitesse_balle_x * dt
+        self.y += self.vitesse_balle_y * dt
         if self.y <= 0:
             self.vitesse_balle_y *= -1
         if self.y >= HEIGHT:
@@ -109,6 +109,7 @@ class Ball:
             
 
     def check_collision(self, paddle):
+        global erreur       #on peut modifier la variable globalement
         if (
             self.x - self.rayon <= paddle.x + paddle.width and      #cote gauche de la balle avec cote droit du paddle
             self.x + self.rayon >= paddle.x and         #cote droit de la balle avec cote gauche du paddle
@@ -122,7 +123,11 @@ class Ball:
             self.x + self.rayon > paddle.x and
             self.x - self.rayon < paddle.x + paddle.width   #collision avec le haut ou le bas du paddle
         ):
-        
+
+            if paddle is paddle_droite:
+                erreur = random.randint(-int(30 * (2 - difficulté_IA)), int(30 * (2 - difficulté_IA)))
+
+
             if (
                 self.y + self.rayon >= paddle.y and
                 self.y - self.rayon < paddle.y              #si la balle touche le haut du paddle
@@ -179,9 +184,16 @@ CLOCK = pygame.time.Clock()
 def main():
     global score_gauche, score_droite       #pour utiliser ces variables en dehors de main
     run = True
+
+    prev_time = time.time() #heure actuelle en secondes depuis l'epoque (1er janvier 1970)
     
     while run:
-        CLOCK.tick(60)
+        CLOCK.tick(FPS)
+        
+        now = time.time()
+        dt = now - prev_time        #
+        prev_time = now
+        
         WIN.fill(BLACK)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -190,12 +202,11 @@ def main():
         pygame.draw.line(WIN, WHITE, (WIDTH/2, 0), (WIDTH/2, HEIGHT))       #ligne au milieu
         paddle_gauche.draw(WIN)     #dessiner les raquettes
         paddle_droite.draw(WIN)
-        paddle_gauche.movement()      #movement des raquettes
-        paddle_droite.movement()
-        paddle_droite.movementAI()      #raquette droite IA
-        balle.draw(WIN)       #dessiner la balle
-        balle.movement()        #movement de la balle
-        point = balle.movement()        #score
+        paddle_gauche.movement(dt)      #movement des raquettes
+        paddle_droite.movement(dt)
+        paddle_droite.movementAI(dt)      #raquette droite IA
+        balle.draw(WIN)       #dessiner la balle        
+        point = balle.movement(dt)        #score
         if point == "point_gauche":
             score_gauche += 1
         if point == "point_droite":
