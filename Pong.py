@@ -157,12 +157,13 @@ def menu():
         facile = font.render("1 - Facile", True, WHITE)
         moyen = font.render("2 - Moyen", True, WHITE)
         difficile = font.render("3 - Difficile", True, WHITE)
+        joueur = font.render("4 - Joueur vs Joueur", True, WHITE)
         
         WIN.blit(titre, (WIDTH / 2 - titre.get_width() / 2, 200))
         WIN.blit(facile, (WIDTH / 2 - facile.get_width() / 2, 300))
         WIN.blit(moyen, (WIDTH / 2 - moyen.get_width() / 2, 370))
         WIN.blit(difficile, (WIDTH / 2 - difficile.get_width() / 2, 440))
-
+        WIN.blit(joueur, (WIDTH / 2 - joueur.get_width() / 2, 510))
         pygame.display.update()
         
         for event in pygame.event.get():
@@ -177,6 +178,9 @@ def menu():
                     run = False
                 elif event.key == pygame.K_3:
                     difficulté_IA = 1.4
+                    run = False
+                elif event.key == pygame.K_4:
+                    difficulté_IA = 0
                     run = False
 
 #boucle pour faire tourner le jeu

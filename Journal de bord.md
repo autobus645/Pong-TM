@@ -34,3 +34,5 @@ critique : un peu trop desorganisé, je n'ai pas beaucoup pensé au TM pendant c
 - ajout du menu avec difficultés, IA plus humaine (marges d'erreur qui dépend de la difficulté de l'IA), essai de réparer le bug (la balle rebondit sur le haut et le bas du paddle), ça marche un peu mais un bug autre apparait quelques fois?
 26.08.2025
 - jeu est independant du framerate (https://www.youtube.com/watch?v=XuyrHE6GIsc), ia plus humaine (elle ne "bug" plus, ne bouge plus bizarrement quand la balle arrive vers elle)
+31.08.2025
+- ajout de joueur vs joueur
